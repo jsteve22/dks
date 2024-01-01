@@ -3,3 +3,6 @@ venv
 
 # ignore python caching
 __pycache__
+
+# ignore temporary files
+*.tmp
