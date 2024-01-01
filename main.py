@@ -23,9 +23,9 @@ def get_dk_html():
   return source
 
 def get_date(date_elem):
-  date_soup = BeautifulSoup(str(date_elem), 'lxml')
-
-  inner = date_soup.select('div.sportsbook-table-header__title')
+  # date_soup = BeautifulSoup(str(date_elem), 'lxml')
+  # inner = date_soup.select('div.sportsbook-table-header__title')
+  inner = date_elem.select('div.sportsbook-table-header__title')
 
   if len(inner) == 0:
     return ''
@@ -42,42 +42,31 @@ def get_date(date_elem):
   return date
 
 def get_team_odds(team_elem):
-  team_soup = BeautifulSoup(f'{team_elem}', 'lxml')
-  team = get_team(team_soup=team_soup)
-  spread, spread_odds = get_spread(team_soup=team_soup)
-  over_under, over_under_odds = get_over_under(team_soup=team_soup)
-  moneyline_odds = get_moneyline(team_soup=team_soup)
+  team = get_team(team_elem)
+  spread, spread_odds = get_spread(team_elem)
+  over_under, over_under_odds = get_over_under(team_elem)
+  moneyline_odds = get_moneyline(team_elem)
 
   return (team, spread, spread_odds, over_under, over_under_odds, moneyline_odds)
 
-def get_team(team_elem=None, team_soup=None):
-  team_soup = team_soup if team_soup != None else BeautifulSoup(f'{team_elem}', 'lxml')
-
-  name = team_soup.select('div.event-cell__name-text')[0].string
+def get_team(team_elem):
+  name = team_elem.select('div.event-cell__name-text')[0].string
   return name
 
-def get_spread(team_elem=None, team_soup=None):
-  team_soup = team_soup if team_soup != None else BeautifulSoup(f'{team_elem}', 'lxml')
-
-  spread = team_soup.select('span.sportsbook-outcome-cell__line')[0].string
-
-  spread_odds = team_soup.select('span.sportsbook-odds.american.default-color')[0].string
+def get_spread(team_elem):
+  spread = team_elem.select('span.sportsbook-outcome-cell__line')[0].string
+  spread_odds = team_elem.select('span.sportsbook-odds.american.default-color')[0].string
 
   return (spread, spread_odds)
 
-def get_over_under(team_elem=None, team_soup=None):
-  team_soup = team_soup if team_soup != None else BeautifulSoup(f'{team_elem}', 'lxml')
-
-  over_under = team_soup.select('span.sportsbook-outcome-cell__line')[1].string
-
-  over_under_odds = team_soup.select('span.sportsbook-odds.american.default-color')[1].string
+def get_over_under(team_elem):
+  over_under = team_elem.select('span.sportsbook-outcome-cell__line')[1].string
+  over_under_odds = team_elem.select('span.sportsbook-odds.american.default-color')[1].string
 
   return (over_under, over_under_odds)
 
-def get_moneyline(team_elem=None, team_soup=None):
-  team_soup = team_soup if team_soup != None else BeautifulSoup(f'{team_elem}', 'lxml')
-
-  moneyline_odds = team_soup.select('span.sportsbook-odds.american.default-color')[2].string
+def get_moneyline(team_elem):
+  moneyline_odds = team_elem.select('span.sportsbook-odds.american.default-color')[2].string
 
   return moneyline_odds
 
@@ -98,13 +87,12 @@ def get_game(team_elems):
   return game, team_odds_a, team_odds_b
 
 def read_table(table_elem):
-  print(type(table_elem))
 
-  table_soup = BeautifulSoup(str(table_elem), 'lxml')
+  # extract the rows from the table elements
+  # table_soup = BeautifulSoup(str(table_elem), 'lxml')
+  # rows = table_soup.select('tr')
+  rows = table_elem.select('tr')
 
-  rows = table_soup.select('tr')
-
-  print(len(rows))
 
   # first row gives the date and rest give the games
   date_elem = rows[0]
