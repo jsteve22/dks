@@ -11,9 +11,6 @@ def get_dk_html():
   # driver.get('https://sportsbook.draftkings.com/leagues/football/nfl')
 
   # sleep to load webpage... idk if it's necessary but I'll have it for now
-  # for i in range(10):
-  #   time.sleep(1)
-  #   print(f'{i+1} seconds have passed')
   time.sleep(1)
 
   # get page source and close driver
@@ -23,8 +20,6 @@ def get_dk_html():
   return source
 
 def get_date(date_elem):
-  # date_soup = BeautifulSoup(str(date_elem), 'lxml')
-  # inner = date_soup.select('div.sportsbook-table-header__title')
   inner = date_elem.select('div.sportsbook-table-header__title')
 
   if len(inner) == 0:
@@ -50,22 +45,26 @@ def get_team_odds(team_elem):
   return (team, spread, spread_odds, over_under, over_under_odds, moneyline_odds)
 
 def get_team(team_elem):
+  # get team names
   name = team_elem.select('div.event-cell__name-text')[0].string
   return name
 
 def get_spread(team_elem):
+  # get spread and odds
   spread = team_elem.select('span.sportsbook-outcome-cell__line')[0].string
   spread_odds = team_elem.select('span.sportsbook-odds.american.default-color')[0].string
 
   return (spread, spread_odds)
 
 def get_over_under(team_elem):
+  # get over under and odds
   over_under = team_elem.select('span.sportsbook-outcome-cell__line')[1].string
   over_under_odds = team_elem.select('span.sportsbook-odds.american.default-color')[1].string
 
   return (over_under, over_under_odds)
 
 def get_moneyline(team_elem):
+  # get moneyline odds
   moneyline_odds = team_elem.select('span.sportsbook-odds.american.default-color')[2].string
 
   return moneyline_odds
@@ -74,6 +73,7 @@ def construct_line(game, date, name, spread, spread_odds, over_under, over_under
   return f'{game}, {date}, {name}, {spread}, {spread_odds}, {over_under}, {over_under_odds}, {moneyline_odds}'
 
 def get_game(team_elems):
+  # get the game of the two teams and the odds for both teams
   team_a, team_b = team_elems
 
   team_odds_a = get_team_odds(team_a)
@@ -89,8 +89,6 @@ def get_game(team_elems):
 def read_table(table_elem):
 
   # extract the rows from the table elements
-  # table_soup = BeautifulSoup(str(table_elem), 'lxml')
-  # rows = table_soup.select('tr')
   rows = table_elem.select('tr')
 
 
@@ -98,8 +96,10 @@ def read_table(table_elem):
   date_elem = rows[0]
   games = rows[1:]
 
+  # extract the date of the game
   date = get_date(date_elem)
 
+  # go through pairs of teams to generate odds for each game
   for i in range(0, len(games), 2):
     game, team_odds_a, team_odds_b = get_game(games[i:i+2])
 
@@ -127,8 +127,8 @@ def main():
     with open(path, 'wb') as f:
       f.write(bytes(f'{html}','utf-8'))
 
+  # parse html file and extract betting tables
   soup = BeautifulSoup(html, 'lxml' )
-
   tables = soup.select('table.sportsbook-table')
   
   for t in tables:
