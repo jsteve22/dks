@@ -1,5 +1,6 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
+import argparse
 import datetime
 import time
 import os
@@ -113,10 +114,9 @@ def read_table(table_elem):
 
   return
 
-def main():
+def load_tmp_file():
   # add test data to speed up extracting sports table data
   path = './test.tmp'
-
   # get draftkings webpage
   if os.path.isfile(path):
     with open(path, 'rb') as f:
@@ -126,9 +126,21 @@ def main():
     html = get_dk_html()
     with open(path, 'wb') as f:
       f.write(bytes(f'{html}','utf-8'))
+  return html
+
+
+def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-t", "--test", help="load html from tmp file if exists", action="store_true")
+  args = parser.parse_args()
+
+  if args.test:
+    html = load_tmp_file()
+  else:
+    html = get_dk_html()
 
   # parse html file and extract betting tables
-  soup = BeautifulSoup(html, 'lxml' )
+  soup = BeautifulSoup(html, 'lxml')
   tables = soup.select('table.sportsbook-table')
   
   for t in tables:
