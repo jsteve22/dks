@@ -66,6 +66,9 @@ def get_spread(team_elem):
 
 
 def get_over_under(team_elem):
+    if len(team_elem.select("span.sportsbook-outcome-cell__line")) < 2:
+        return ('', '')
+
     # get over under and odds
     over_under = team_elem.select("span.sportsbook-outcome-cell__line")[1].string
     over_under_odds = team_elem.select("span.sportsbook-odds.american.default-color")[
@@ -76,6 +79,9 @@ def get_over_under(team_elem):
 
 
 def get_moneyline(team_elem):
+    if len(team_elem.select("span.sportsbook-odds.american.default-color")) < 3:
+        return ''
+
     # get moneyline odds
     moneyline_odds = team_elem.select("span.sportsbook-odds.american.default-color")[
         2
@@ -132,50 +138,47 @@ def read_table(table_elem):
 
     # go through pairs of teams to generate odds for each game
     for i in range(0, len(games), 2):
-        try:
-            game, team_odds_a, team_odds_b = get_game(games[i : i + 2])
+        game, team_odds_a, team_odds_b = get_game(games[i : i + 2])
 
-            (
-                name_a,
-                spread_a,
-                spread_odds_a,
-                over_under_a,
-                over_under_odds_a,
-                moneyline_odds_a,
-            ) = team_odds_a
-            (
-                name_b,
-                spread_b,
-                spread_odds_b,
-                over_under_b,
-                over_under_odds_b,
-                moneyline_odds_b,
-            ) = team_odds_b
+        (
+            name_a,
+            spread_a,
+            spread_odds_a,
+            over_under_a,
+            over_under_odds_a,
+            moneyline_odds_a,
+        ) = team_odds_a
+        (
+            name_b,
+            spread_b,
+            spread_odds_b,
+            over_under_b,
+            over_under_odds_b,
+            moneyline_odds_b,
+        ) = team_odds_b
 
-            line_a = construct_line(
-                game,
-                date,
-                name_a,
-                spread_a,
-                spread_odds_a,
-                over_under_a,
-                over_under_odds_a,
-                moneyline_odds_a,
-            )
-            line_b = construct_line(
-                game,
-                date,
-                name_b,
-                spread_b,
-                spread_odds_b,
-                over_under_b,
-                over_under_odds_b,
-                moneyline_odds_b,
-            )
-            print(line_a)
-            print(line_b)
-        except:
-            print(f"game skipped")
+        line_a = construct_line(
+            game,
+            date,
+            name_a,
+            spread_a,
+            spread_odds_a,
+            over_under_a,
+            over_under_odds_a,
+            moneyline_odds_a,
+        )
+        line_b = construct_line(
+            game,
+            date,
+            name_b,
+            spread_b,
+            spread_odds_b,
+            over_under_b,
+            over_under_odds_b,
+            moneyline_odds_b,
+        )
+        print(line_a)
+        print(line_b)
 
     return
 
@@ -206,9 +209,6 @@ def main():
         html = load_tmp_file()
     else:
         html = get_dk_html()
-
-    print(html)
-    return
 
     # parse html file and extract betting tables
     soup = BeautifulSoup(html, "lxml")
