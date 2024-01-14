@@ -67,7 +67,7 @@ def get_spread(team_elem):
 
 def get_over_under(team_elem):
     if len(team_elem.select("span.sportsbook-outcome-cell__line")) < 2:
-        return ('', '')
+        return ("", "")
 
     # get over under and odds
     over_under = team_elem.select("span.sportsbook-outcome-cell__line")[1].string
@@ -80,7 +80,7 @@ def get_over_under(team_elem):
 
 def get_moneyline(team_elem):
     if len(team_elem.select("span.sportsbook-odds.american.default-color")) < 3:
-        return ''
+        return ""
 
     # get moneyline odds
     moneyline_odds = team_elem.select("span.sportsbook-odds.american.default-color")[
